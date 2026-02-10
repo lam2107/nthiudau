@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Valentine</title>
+
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  background: black;
+  overflow: hidden;
+  font-family: 'Courier New', monospace;
+}
+
+/* MATRIX */
+#matrix {
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+/* TEXT GIỮA MÀN */
+#centerText {
+  position: fixed;
+  top: 50%;
+  width: 100%;
+  transform: translateY(-50%);
+  text-align: center;
+  font-size: 28px;
+  color: pink;
+  opacity: 0;
+  transition: opacity 1s;
+  z-index: 10;
+}
+
+#countdown {
+  font-size: 64px;
+}
+
+/* HEART */
+#heartCanvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+
+#heartText {
+  position: fixed;
+  top: 50%;
+  width: 100%;
+  transform: translateY(-50%);
+  text-align: center;
+  font-size: 22px;
+  color: pink;
+  opacity: 0;
+  transition: opacity 2s;
+  z-index: 10;
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="matrix"></canvas>
+<canvas id="heartCanvas"></canvas>
+
+<div id="centerText"></div>
+
+<script>
+/* ================= MATRIX RAIN ================= */
+const matrixCanvas = document.getElementById("matrix");
+const mtx = matrixCanvas.getContext("2d");
+
+matrixCanvas.width = window.innerWidth;
+matrixCanvas.height = window.innerHeight;
+
+const letters = "01LOVE♡";
+const fontSize = 16;
+const columns = matrixCanvas.width / fontSize;
+const drops = Array(Math.floor(columns)).fill(1);
+
+function drawMatrix() {
+  mtx.fillStyle = "rgba(0,0,0,0.05)";
+  mtx.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
+
+  mtx.fillStyle = "pink";
+  mtx.font = fontSize + "px monospace";
+
+  for (let i = 0; i < drops.length; i++) {
+    const text = letters[Math.floor(Math.random() * letters.length)];
+    mtx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+    if (drops[i] * fontSize > matrixCanvas.height && Math.random() > 0.95) {
+      drops[i] = 0;
+    }
+    drops[i]++;
+  }
+}
+
+setInterval(drawMatrix, 50);
+
+/* ================= TEXT CONTROL ================= */
+const centerText = document.getElementById("centerText");
+
+function showText(text, duration) {
+  centerText.innerHTML = text;
+  centerText.style.opacity = 1;
+  setTimeout(() => {
+    centerText.style.opacity = 0;
+  }, duration);
+}
+
+/* ================= HEART DRAW ================= */
+const heartCanvas = document.getElementById("heartCanvas");
+const hctx = heartCanvas.getContext("2d");
+
+heartCanvas.width = window.innerWidth;
+heartCanvas.height = window.innerHeight;
+
+function drawHeart(progress) {
+  hctx.clearRect(0, 0, heartCanvas.width, heartCanvas.height);
+  hctx.strokeStyle = "pink";
+  hctx.lineWidth = 2;
+
+  hctx.beginPath();
+  for (let t = 0; t < Math.PI * 2 * progress; t += 0.02) {
+    const x = 16 * Math.pow(Math.sin(t), 3);
+    const y =
+      13 * Math.cos(t) -
+      5 * Math.cos(2 * t) -
+      2 * Math.cos(3 * t) -
+      Math.cos(4 * t);
+
+    const scale = 12;
+    hctx.lineTo(
+      heartCanvas.width / 2 + x * scale,
+      heartCanvas.height / 2 - y * scale
+    );
+  }
+  hctx.stroke();
+}
+
+function animateHeart() {
+  let p = 0;
+  const interval = setInterval(() => {
+    p += 0.01;
+    drawHeart(p);
+    if (p >= 1) {
+      clearInterval(interval);
+      document.getElementById("heartText").style.opacity = 1;
+    }
+  }, 30);
+}
+
+/* ================= SEQUENCE ================= */
+
+/* COUNTDOWN */
+setTimeout(() => showText("<div id='countdown'>3</div>", 800), 0);
+setTimeout(() => showText("<div id='countdown'>2</div>", 800), 1000);
+setTimeout(() => showText("<div id='countdown'>1</div>", 800), 2000);
+
+/* 6 ĐOẠN TEXT */
+setTimeout(() => showText("Xinchao embe cụa tôi", 3000), 3500);
+setTimeout(() => showText("sogy em vì chiều c bận đột xuất", 3000), 7000);
+setTimeout(() => showText("hông nch được cùng em :((", 3000), 10500);
+setTimeout(() => showText("nhớ e lắm mún nhắn lắm lun", 3000), 14000);
+setTimeout(() => showText(":< iu đừn bùn nháaa ", 3000), 17500);
+/* TEXT CUỐI + TRÁI TIM XUẤT HIỆN CÙNG LÚC */
+setTimeout(() => {
+  showText("Chương e nhứt lunn <3", 30000);
+  animateHeart();
+}, 21000);
+
+
+</script>
+
+</body>
+</html>
